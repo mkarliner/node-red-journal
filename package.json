@@ -1,12 +1,17 @@
 {
     "name"         : "node-red-contrib-journal",
-    "version"      : "0.0.1",
+    "version"      : "0.0.2",
+    "author"	   : "Michael Karliner",
     "description"  : "Journalling of sequential messages to provide basic time series output ",
     "dependencies": {
 	    "fifo-array": "0.1.2"
     },
     "keywords": [ "node-red", "thingstudio"],
-    "node-red"     : {
+    "repository" : { 
+	"type" : "git", 	
+	"url" : "git@github.com:mkarliner/node-red-journal.git"
+     },
+    "node-red": {
         "nodes": {
             "journal": "journal.js"
         }
