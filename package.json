@@ -1,0 +1,14 @@
+{
+    "name"         : "node-red-contrib-journal",
+    "version"      : "0.0.1",
+    "description"  : "Journalling of sequential messages to provide basic time series output ",
+    "dependencies": {
+	    "fifo-array": "0.1.2"
+    },
+    "keywords": [ "node-red", "thingstudio"],
+    "node-red"     : {
+        "nodes": {
+            "journal": "journal.js"
+        }
+    }
+}
