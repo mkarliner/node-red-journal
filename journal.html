@@ -4,7 +4,10 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:"Journal"},
-            max: {value: "", required: true}
+            max: {value: "", required: true},
+			persist: {value: "false"},
+			persistInterval: {value: 5},
+			storeName: {value: "", required: true}
         },
         inputs:1,
         outputs:2,
@@ -24,8 +27,28 @@
         <label for="node-input-max"><i class="icon-tag"></i> Maximum Entries</label>
         <input type="number" id="node-input-max">
     </div>
+    <div class="form-row">
+        <label for="node-input-persist"><i class="icon-tag"></i> Persist Journal?</label>
+        <input type="checkbox" id="node-input-persist">
+    </div>
+    <div class="form-row">
+        <label for="node-input-persistInterval"><i class="icon-tag"></i> Persist Interval (secs)</label>
+        <input type="number" id="node-input-persistInterval">
+    </div>
+    <div class="form-row">
+        <label for="node-input-storeName"><i class="icon-tag"></i> Store Name</label>
+        <input type="string" id="node-input-storeName">
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="journal">
-    <p>A node that implements a fixed length fifo for basic time series operations</p>
+    <p>A node that implements a persistable fixed length fifo for basic time series operations</p>
+	<p>Parameters</p>
+	<table>
+		<tr><td>Name</td><td>Name of the node</td></tr>
+		<tr><td>Maximum Entries</td><td>Maximum number of messages to store</td></tr>
+		<tr><td>Persist</td><td>Should this journal be persisted?</td></tr>
+		<tr><td>Persist Interval</td><td>Time in seconds before backing up the journal</td></tr>
+		<tr><td>Store Name</td><td>Unique name for the database key</td></tr>
+	</table>
 </script>

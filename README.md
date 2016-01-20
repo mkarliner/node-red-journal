@@ -1,8 +1,12 @@
 #Node Red Journal Node
 
-This node take a series of JSON encoded messages assumed to be numeric values or objects, parses them
+This node take a series of  messages assumed to be numeric values or objects, parses them
 and stores them in a fixed sized FIFO array. Each time a message
-arrives, it sends out a JSON encoded version of the fifo.
+arrives, it sends out the fifo.
+
+Optionally, the journal can be persisted. If this is used, the storeName option
+should be set to a unique string and the interval should be set to the number
+of seconds between persisting the values.
 
 The node will also send an average of all the values in the fifo every _fifo-length_ messages 
 to the second output. This means the nodes can be cascaded to implement
