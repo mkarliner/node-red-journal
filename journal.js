@@ -5,23 +5,30 @@ module.exports = function(RED) {
 	var storage = require('node-persist');
         RED.nodes.createNode(this,config);
 		this.max = config.max;
+		this.topic = config.name;
 		this.storeName = config.storeName;
-		//console.log("STORENAME: ", this.storeName)
 		this.persist = config.persist;
 		this.persistInterval  = config.persistInterval;
         var node = this;
 		storage.initSync({
 			interval: 1000 * this.persistInterval
 		});
-		var fifo = storage.getItem(this.storeName);
-		//console.log("FIFO INIT: ", fifo);
-        var fifo  = fifo || new Fifo(node.max, []);
-		
+        var fifo  = new Fifo(parseInt(node.max));
+		var oldFifo = storage.getItem(this.storeName);
+		if(oldFifo) {
+			oldFifo.map(function(obj){
+				fifo.push(obj);
+			})	
+		}
 		var cnt = 0;
         this.on('input', function(msg) {
 			// Push the value on to the fifo and output the fifo as a message.
 			var value = msg.payload;
-            fifo.push({value: value, journalTimestamp: new Date().getTime()});
+            fifo.push({
+				value: value, 
+				jts: new Date().getTime(),
+				topic: this.name
+			});
 	    	var objectOutput = {payload: fifo }
 			var simpleOutput = {payload: fifo.map(function(obj) {
 				return obj.value;
@@ -31,7 +38,7 @@ module.exports = function(RED) {
 			// Output the average every 'n' samples n the second output.
 			if(cnt == fifo.length-1) {
 				cnt=0;
-				var sum  = fifo.reduce(function(a, b) { return a + b; }, 0);
+				var sum  = fifo.reduce(function(a, b) { return a.value + b.value}, 0);
 				var average  = sum /  fifo.length;
 				node.send([null,null, {payload: average}])
 			} else {
