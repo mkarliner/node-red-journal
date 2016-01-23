@@ -8,7 +8,7 @@ The first version emits an array of objects which look like this:
 
 {
 	value: <inputValue>
-	journalTimestamp: <javascript timestamp in milliseconds>
+	jts: <javascript timestamp in milliseconds>
 }
 
 The second version is a simple array of the last 'n' input values.
