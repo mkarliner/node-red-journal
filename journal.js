@@ -38,8 +38,9 @@ module.exports = function(RED) {
 			// Output the average every 'n' samples n the second output.
 			if(cnt == fifo.length-1) {
 				cnt=0;
-				var sum  = fifo.reduce(function(a, b) { return a.value + b.value}, 0);
-				var average  = sum /  fifo.length;
+				var sum  = fifo.reduce(function(a, b) { 
+					return a + b.value}, 0);
+				var average  = (sum /  fifo.length).toFixed(2);
 				node.send([null,null, {payload: average}])
 			} else {
 				cnt++;

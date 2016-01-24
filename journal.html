@@ -17,6 +17,43 @@
         }
     });
 </script>
+<script type="text/x-red" data-help-name="journal">
+    <p>A node that implements a persistable fixed length FIFO for basic time series operations</p>
+	<p>Journal takes input messages and buffers them up to its maximum length. On the arrival of each input message it outputs the whole of the journal in two different forms (see Outputs)</p>
+	<p>Every 'maximum entries' input messages, the journal outputs the average of all input messages in the journal. This enables cascading of journals in successively longer time series. Note that if the input messages are objects rather than simple numbers, the average function will have no effect.
+	<p>
+               <p><b>Parameters</b></p>
+               <table>
+                     <tr><td>Name:</td><td> Name of the node</td></tr>
+                     <tr><td>Maximum Entries:</td><td> Maximum number of messages to store</td></tr>
+                     <tr><td>Persist:</td><td> Should this journal be persisted?</td></tr>
+                     <tr><td>Persist Interval:</td><td> Time in seconds before backing up the journal</td></tr>
+                     <tr><td>Store Name: </td><td> Unique name for the database key</td></tr>
+               </table>
+
+              
+               <br />
+               <b>Outputs</b>
+               <br />
+
+Output 1. Array of time stamps and input message/value objects
+  <pre>{ 
+"payload": 
+ [ 
+  { "value": 23,2 "jts": 1453393178662 }, 
+  { "value": 22,9 "jts": 1453393210506 }
+ ]
+}</pre>
+2. Array of values (with no timestamps)<br/>
+3. Average of all values in Journal. Output every 'maximum entries' input messages.
+<br/><br />
+To get current latest time stamped value
+<pre>
+var lng = msg.payload.length-1;
+msg.payload[lng].journalTimestamp;
+msg.payload[lng].value;
+</pre>
+</script>
 
 <script type="text/x-red" data-template-name="journal">
     <div class="form-row">
