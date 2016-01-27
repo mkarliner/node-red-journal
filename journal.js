@@ -5,7 +5,7 @@ module.exports = function(RED) {
 	var storage = require('node-persist');
         RED.nodes.createNode(this,config);
 		this.max = config.max;
-		this.topic = config.name;
+		this.name = config.name;
 		this.storeName = config.storeName;
 		this.persist = config.persist;
 		this.persistInterval  = config.persistInterval;
@@ -14,6 +14,7 @@ module.exports = function(RED) {
 			interval: 1000 * this.persistInterval
 		});
         var fifo  = new Fifo(parseInt(node.max));
+		fifo.journalName = this.name;
 		var oldFifo = storage.getItem(this.storeName);
 		if(oldFifo) {
 			oldFifo.map(function(obj){
@@ -27,7 +28,6 @@ module.exports = function(RED) {
             fifo.push({
 				value: value, 
 				jts: new Date().getTime(),
-				topic: this.name
 			});
 	    	var objectOutput = {payload: fifo }
 			var simpleOutput = {payload: fifo.map(function(obj) {
