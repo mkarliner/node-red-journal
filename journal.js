@@ -66,7 +66,6 @@ module.exports = function(RED) {
 					fifo.push(this.lastMsg.payload);
 				}
 				node.send([{payload: fifo, topic: this.lastMsg.topic + this.topicSuffix}, null]);
-				node.send([{payload: "Boo!"}])
 				storage.setItem(this.storeName, fifo);
 				that = this;
 				averageValues(that, fifo, this.keysToAverage);
