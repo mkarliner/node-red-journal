@@ -1,25 +1,19 @@
 #Node Red Journal Node
 
-This node take a series of  messages assumed to be numeric values or objects, parses them
-and stores them in a fixed sized FIFO array. Each time a message
-arrives, it sends out the fifo in two different versions on the first two outputs.
 
-The first version emits an array of objects which look like this:
+A node that implements a persistable fixed length FIFO for basic time series operations
 
-{
-	value: <inputValue>
-	jts: <javascript timestamp in milliseconds>
-}
+Journal takes input messages and buffers them up to its maximum length. 
+Journal can be work in two different modes, clocked and message driven. 
 
-The second version is a simple array of the last 'n' input values.
+In clocked mode, arriving messages are cached and added to the journal every 'clock interval' seconds, which is then output. 
 
-Optionally, the journal can be persisted. If this is used, the storeName option
-should be set to a unique string and the interval should be set to the number
-of seconds between persisting the values.
+In message driven mode, the journal is added to and output every time new messages arrive.
 
-The node will also send an average of all the values in the fifo every _fifo-length_ messages 
-to the third output. This means the nodes can be cascaded to implement
-a round-robin style, in-core, time series database.
+Every 'maximum entries' input messages, the journal outputs a message which is the average of all input messages in the journal. This enables cascading of journals in successively longer time series. 
+
+Note that if the input messages are objects rather than simple numbers, you should specify the 'Keys to average' property, which is a comma separated list of message properties to be averaged. All other properties of the message will be passed through to the next journal unchanged from the last received message.
+
 
 This node has been designed to be used with ThingStudio and the widgets which
 take journal inputs, such as the Sparkline widget.
