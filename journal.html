@@ -7,10 +7,14 @@
             max: {value: "", required: true},
 			persist: {value: "false"},
 			persistInterval: {value: 5},
-			storeName: {value: "", required: true}
+			storeName: {value: "", required: true},
+			clocked: {value: "false", required: false},
+			clockInterval: {value: 60, required: false},
+			keysToAverage: {value: "", required: false},
+			topicSuffix: {value: "/journal"} 
         },
         inputs:1,
-        outputs:3,
+        outputs:2,
         icon: "db.png",
         label: function() {
             return this.name||"Journal";
@@ -19,9 +23,11 @@
 </script>
 <script type="text/x-red" data-help-name="journal">
     <p>A node that implements a persistable fixed length FIFO for basic time series operations</p>
-	<p>Journal takes input messages and buffers them up to its maximum length. On the arrival of each input message it outputs the whole of the journal in two different forms (see Outputs)</p>
-	<p>Every 'maximum entries' input messages, the journal outputs the average of all input messages in the journal. This enables cascading of journals in successively longer time series. Note that if the input messages are objects rather than simple numbers, the average function will have no effect.
-	<p>
+	<p>Journal takes input messages and buffers them up to its maximum length. </p>
+	<p>Journal can be work in two different modes, clocked and message driven. In clocked mode, arriving messages are cached and added to the journal every 'clock interval' seconds, which is then output. In message driven mode, the journal is added to and output every time new messages arrive.
+	<p>Every 'maximum entries' input messages, the journal outputs a message which is the average of all input messages in the journal. This enables cascading of journals in successively longer time series. Note that if the input messages are objects rather than simple numbers, you should specify the 'Keys to average' property, which is a comma separated list of message properties to be averaged. All other properties of the message will be passed through to the next journal unchanged from the last received message
+	</p>
+  <p>Finally, the 'topic suffic' property is a string which is appended to the topic of incoming messages.</p>
                <p><b>Parameters</b></p>
                <table>
                      <tr><td>Name:</td><td> Name of the node</td></tr>
@@ -29,6 +35,10 @@
                      <tr><td>Persist:</td><td> Should this journal be persisted?</td></tr>
                      <tr><td>Persist Interval:</td><td> Time in seconds before backing up the journal</td></tr>
                      <tr><td>Store Name: </td><td> Unique name for the database key</td></tr>
+					 <tr><td>Clocked: </td><td>Message or timer driven</td></tr>
+					 <tr><td>Clock Interval: </td><td>Time between entries if clocked</td></tr>
+					 <tr><td>Keys to average: </td><td>List of message keys to average on the cascade output</td></tr>
+					 <tr><td>Topic Suffix: </td><td>String to append to topic</td></tr>
                </table>
 
               
@@ -75,6 +85,22 @@ msg.payload[lng].value;
     <div class="form-row">
         <label for="node-input-storeName"><i class="icon-tag"></i> Store Name</label>
         <input type="string" id="node-input-storeName">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clocked"><i class="icon-tag"></i>Clocked</label>
+        <input type="checkbox" id="node-input-clocked">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clockInterval"><i class="icon-tag"></i>Clock Interval</label>
+        <input type="number" id="node-input-clockInterval">
+    </div>
+    <div class="form-row">
+        <label for="node-input-keysToAverage"><i class="icon-tag"></i>Message keys to average</label>
+        <input type="string" id="node-input-keysToAverage">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topicSuffix"><i class="icon-tag"></i>String to append to topic</label>
+        <input type="string" id="node-input-topicSuffix">
     </div>
 </script>
 
