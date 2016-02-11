@@ -64,13 +64,13 @@ module.exports = function(RED) {
 				console.log("Clock!!!: ", new Date())
 				if(this.lastMsg) {
 					fifo.push(this.lastMsg.payload);
+					node.send([{payload: fifo, topic: this.lastMsg.topic + this.topicSuffix}, null]);
+					storage.setItem(this.storeName, fifo);
+					that = this;
+					averageValues(that, fifo, this.keysToAverage);
 				}
-				node.send([{payload: fifo, topic: this.lastMsg.topic + this.topicSuffix}, null]);
-				storage.setItem(this.storeName, fifo);
-				that = this;
-				averageValues(that, fifo, this.keysToAverage);
 			}
-			setInterval(journalClock.bind(this), this.clockInterval * 1000);
+			this.clock = setInterval(journalClock.bind(this), this.clockInterval * 1000);
 		}
 		// Initialise the fifo with values from the persisted one.
         var fifo  = new Fifo(parseInt(node.max));
@@ -82,6 +82,10 @@ module.exports = function(RED) {
 			})	
 		}
 		var cnt = 0;
+		this.on('close', function(){
+			node.warn("Shutting down journal: ", this.name);
+			clearInterval(this.clock);
+		});
         this.on('input', function(msg) {
 			this.lastMsg = msg;
 			// If clocked, just store the last value.
