@@ -1,10 +1,11 @@
  
 module.exports = function(RED) {
 	function averageValues(that, values, keys) {
-		console.log("AVV: ", that.topicSuffix, values[0], keys, that.avgCount)
+		//console.log("AVV: ", that.topicSuffix, values, keys, that.avgCount)
 		if(that.avgCount == that.max-1) {
 			that.avgCount=0;
-			ret = that.lastMsg;
+			//Clone the last message as a template for the cascade.
+			ret = JSON.parse(JSON.stringify(that.lastMsg));
 			//Are we storing objects or simple values?
 			if(keys) {
 				for(k in keys) {
@@ -16,13 +17,13 @@ module.exports = function(RED) {
 					ret.payload[keys[k]] = (that.averages[keys[k]] / values.length).toFixed(2);
 					that.averages[keys[k]] = 0;
 				}
-				//console.log("SENDING: ", ret)
+				//console.log("SENDING OBJ: ", ret)
 				that.send([null, ret])
 			} else {
 				var sum  = values.reduce(function(a, b) {
 					return a + b.value}, 0);
 				var average  = (sum /  values.length).toFixed(2);
-				console.log("SENDING: ", average)
+				console.log("SENDING SIMPLE: ", average)
 				that.send([null, {payload: average, topic: that.lastMsg.topic}])
 			}
 		} else {
@@ -61,7 +62,7 @@ module.exports = function(RED) {
 		//Set up the clocked journalling if applicable
 		if(this.clocked) {
 			function journalClock(){
-				console.log("Clock!!!: ", new Date())
+				//console.log("Clock!!!: ", new Date())
 				if(this.lastMsg) {
 					fifo.push(this.lastMsg.payload);
 					node.send([{payload: fifo, topic: this.lastMsg.topic + this.topicSuffix}, null]);
