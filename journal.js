@@ -10,20 +10,20 @@ module.exports = function(RED) {
 			if(keys) {
 				for(k in keys) {
 					for(var v=0; v<values.length; v++) {
-						//console.log("AV: ", keys[k], that.averages[keys[k]], values[v])
+						if(!values[v]) {
+							console.log("Null values!!!", values);
+							break;
+						}
 						that.averages[keys[k]] += values[v][keys[k]];
 					}
-					//console.log("Averaging ", that.averages, keys[k]);
-					ret.payload[keys[k]] = (that.averages[keys[k]] / values.length).toFixed(2);
+					ret.payload[keys[k]] = parseFloat((that.averages[keys[k]] / values.length).toFixed(2));
 					that.averages[keys[k]] = 0;
 				}
-				//console.log("SENDING OBJ: ", ret)
 				that.send([null, ret])
 			} else {
 				var sum  = values.reduce(function(a, b) {
 					return a + b.value}, 0);
-				var average  = (sum /  values.length).toFixed(2);
-				console.log("SENDING SIMPLE: ", average)
+				var average  = parseFloat((sum /  values.length).toFixed(2));
 				that.send([null, {payload: average, topic: that.lastMsg.topic}])
 			}
 		} else {
@@ -40,7 +40,6 @@ module.exports = function(RED) {
 		this.persist = config.persist;
 		this.persistInterval  = config.persistInterval;
 		this.clocked = config.clocked;
-		console.log("Clocked: ", this.clocked)
 		this.clockInterval = config.clockInterval;
 		this.keysToAverage = config.keysToAverage ? config.keysToAverage.split(",") : null;
 		this.topicSuffix = config.topicSuffix;
@@ -54,7 +53,6 @@ module.exports = function(RED) {
 		} else {
 			this.averages = 0;
 		}
-		console.log("AVERAGES: ", this.averages)
         var node = this;
 		storage.initSync({
 			interval: 1000 * this.persistInterval
@@ -89,6 +87,7 @@ module.exports = function(RED) {
 		});
         this.on('input', function(msg) {
 			this.lastMsg = msg;
+			//console.log("MSG: ", msg)
 			// If clocked, just store the last value.
 			if(!this.clocked) {
 				// Push the value on to the fifo
