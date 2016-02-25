@@ -22,7 +22,7 @@ module.exports = function(RED) {
 				that.send([null, ret])
 			} else {
 				var sum  = values.reduce(function(a, b) {
-					return a + b.value}, 0);
+					return a + b}, 0);
 				var average  = parseFloat((sum /  values.length).toFixed(2));
 				that.send([null, {payload: average, topic: that.lastMsg.topic}])
 			}
